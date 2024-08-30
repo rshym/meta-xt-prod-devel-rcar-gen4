@@ -10,7 +10,6 @@ variables:
   XT_DOMU_DTB_NAME: "%{SOC_FAMILY}-%{MACHINE}-domu.dtb"
   XT_XEN_DTB_NAME: "%{SOC_FAMILY}-%{MACHINE}-xen.dtb"
   XT_GENERIC_DOMU_TAG: ""
-  SOC_FAMILY: "r8a779f0"
   XT_DOMD_CONFIG_NAME: "domd-%{MACHINE}.cfg"
   XT_DOMU_CONFIG_NAME: "domu-%{MACHINE}.cfg"
   XT_KERNEL_BRANCH: "v5.10.41/rcar-5.1.7.rc11.2-xt"
@@ -166,7 +165,6 @@ components:
         - "../meta-openembedded/meta-networking"
         - "../meta-openembedded/meta-python"
         - "../meta-openembedded/meta-filesystems"
-        - "../meta-renesas/meta-rcar-gateway"
         - "../meta-xt-common/meta-xt-domx"
         - "../meta-xt-common/meta-xt-driver-domain"
         - "../meta-xt-common/meta-xt-security"
@@ -183,7 +181,7 @@ components:
         - "tmp/deploy/images/%{MACHINE}/u-boot-elf-%{MACHINE}.srec"
         - "tmp/deploy/images/%{MACHINE}/xen-%{MACHINE}.uImage"
         - "tmp/deploy/images/%{MACHINE}/xenpolicy-%{MACHINE}"
-        - "tmp/deploy/images/%{MACHINE}/r8a779f0-%{MACHINE}-xen.dtb"
+        - "tmp/deploy/images/%{MACHINE}/%{XT_XEN_DTB_NAME}"
         - "tmp/deploy/images/%{MACHINE}/boot-tftp.uImage"
         - "tmp/deploy/images/%{MACHINE}/boot-emmc.uImage"
   domu:
@@ -210,7 +208,6 @@ components:
         - "../meta-openembedded/meta-filesystems"
         - "../meta-openembedded/meta-networking"
         - "../meta-openembedded/meta-python"
-        - "../meta-renesas/meta-rcar-gateway"
         - "../meta-xt-common/meta-xt-domu"
         - "../meta-xt-common/meta-xt-security"
         - "../meta-xt-rcar/meta-xt-gateway/meta-xt-domx-gen4"
@@ -233,7 +230,7 @@ components:
         - "%{YOCTOS_WORK_DIR}/%{DOMD_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/u-boot-elf-%{MACHINE}.srec"
         - "%{YOCTOS_WORK_DIR}/%{DOMD_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/xen-%{MACHINE}.uImage"
         - "%{YOCTOS_WORK_DIR}/%{DOMD_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/xenpolicy-%{MACHINE}"
-        - "%{YOCTOS_WORK_DIR}/%{DOMD_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/r8a779f0-%{MACHINE}-xen.dtb"
+        - "%{YOCTOS_WORK_DIR}/%{DOMD_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/%{XT_XEN_DTB_NAME}"
         - "%{YOCTOS_WORK_DIR}/%{DOMD_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/boot-emmc.uImage"
         - "%{YOCTOS_WORK_DIR}/%{DOMD_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/boot-tftp.uImage"
 
@@ -266,10 +263,46 @@ parameters:
       overrides:
         variables:
           MACHINE: "spider"
+          SOC_FAMILY: "r8a779f0"
+        components:
+          domd:
+            builder:
+              layers:
+                - "../meta-renesas/meta-rcar-gateway"
+          domu:
+            builder:
+              layers:
+                - "../meta-renesas/meta-rcar-gateway"
     "s4sk":
       overrides:
         variables:
           MACHINE: "s4sk"
+          SOC_FAMILY: "r8a779f0"
+        components:
+          domd:
+            builder:
+              layers:
+                - "../meta-renesas/meta-rcar-gateway"
+          domu:
+            builder:
+              layers:
+                - "../meta-renesas/meta-rcar-gateway"
+    "whitehawk":
+      overrides:
+        variables:
+          MACHINE: "whitehawk"
+          SOC_FAMILY: "r8a779g0"
+        components:
+          domd:
+            builder:
+              layers:
+                - "../meta-renesas/meta-rcar-bsp"
+                - "../meta-renesas/meta-rcar-adas"
+          domu:
+            builder:
+              layers:
+                - "../meta-renesas/meta-rcar-bsp"
+                - "../meta-renesas/meta-rcar-adas"
 
   ENABLE_DOMU:
     desc: "Build generic Yocto-based DomU"
