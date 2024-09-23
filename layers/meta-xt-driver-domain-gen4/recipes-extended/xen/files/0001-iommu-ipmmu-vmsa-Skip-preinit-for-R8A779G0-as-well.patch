@@ -28,7 +28,7 @@ index 411fe2f1fc..a10f714f7e 100644
 -    if ( !s4 && dt_device_is_compatible(node, "renesas,ipmmu-r8a779f0") )
 -        s4 = true;
 +    if ( !gen4 && (dt_device_is_compatible(node, "renesas,ipmmu-r8a779f0") ||
-+         (dt_device_is_compatible(node, "renesas,ipmmu-r8a779g0"))
++         (dt_device_is_compatible(node, "renesas,ipmmu-r8a779g0"))))
 +        gen4 = true;
  
 -    if ( !s4 )
