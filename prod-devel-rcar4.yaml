@@ -167,7 +167,6 @@ components:
         - "../meta-openembedded/meta-networking"
         - "../meta-openembedded/meta-python"
         - "../meta-openembedded/meta-filesystems"
-        - "../meta-renesas/meta-rcar-gateway"
         - "../meta-xt-common/meta-xt-domx"
         - "../meta-xt-common/meta-xt-driver-domain"
         - "../meta-xt-common/meta-xt-security"
@@ -210,7 +209,6 @@ components:
         - "../meta-openembedded/meta-filesystems"
         - "../meta-openembedded/meta-networking"
         - "../meta-openembedded/meta-python"
-        - "../meta-renesas/meta-rcar-gateway"
         - "../meta-xt-common/meta-xt-domu"
         - "../meta-xt-common/meta-xt-security"
         - "../meta-xt-rcar/meta-xt-gateway/meta-xt-domx-gen4"
@@ -266,10 +264,45 @@ parameters:
       overrides:
         variables:
           MACHINE: "spider"
+        components:
+          domd:
+            builder:
+              layers:
+                - "../meta-renesas/meta-rcar-gateway"
+          domu:
+            builder:
+              layers:
+                - "../meta-renesas/meta-rcar-gateway"
     "s4sk":
       overrides:
         variables:
           MACHINE: "s4sk"
+        components:
+          domd:
+            builder:
+              layers:
+                - "../meta-renesas/meta-rcar-gateway"
+          domu:
+            builder:
+              layers:
+                - "../meta-renesas/meta-rcar-gateway"
+    "whitehawk":
+      default: true
+      overrides:
+        variables:
+          MACHINE: "whitehawk"
+          SOC_FAMILY: "r8a779g0"
+        components:
+          domd:
+            builder:
+              layers:
+                - "../meta-renesas/meta-rcar-bsp"
+                - "../meta-renesas/meta-rcar-adas"
+          domu:
+            builder:
+              layers:
+                - "../meta-renesas/meta-rcar-bsp"
+                - "../meta-renesas/meta-rcar-adas"
 
   ENABLE_DOMU:
     desc: "Build generic Yocto-based DomU"
