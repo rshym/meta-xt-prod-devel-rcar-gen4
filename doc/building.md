@@ -26,31 +26,43 @@ depending on the build options.
 ## Building
 
 Moulin is used to generate Ninja build file: `moulin
-prod-devel-rcar4.yaml`. This project provides number of additional
-parameters. You can check them with `--help-config` command
-line option:
+s4.yaml` or `moulin v4h.yaml`, depending on the SOC name.
+This project provides number of additional parameters.
+You can check them with `--help-config` command line option.
 
+Two S4-based boards are supported, `spider` (default) and `s4sk`:
 ```
-# moulin prod-devel-rcar4.yaml --help-config
-usage: moulin prod-devel-rcar4.yaml [--MACHINE {spider,s4sk}] [--ENABLE_DOMU {no,yes}]
+$ moulin s4.yaml --help-config
+usage: moulin s4.yaml [--MACHINE {spider,s4sk}] [--ENABLE_DOMU {no,yes}]
 
-Config file description: Xen-Troops development setup for Renesas RCAR Gen4
-hardware
+Config file description: Xen-Troops development setup for Renesas RCAR Gen4 hardware
 
 optional arguments:
   --MACHINE {spider,s4sk}
-                        RCAR Gen4-based device
+                        RCAR Gen4-based device (default: spider)
   --ENABLE_DOMU {no,yes}
-                        Build generic Yocto-based DomU
+                        Build generic Yocto-based DomU (default: no)
 ```
 
-Two machines are supported: `spider` (default) and `s4sk`.
+For the v4h only exisitng board `whitehawk` is supported:
+```
+$ moulin v4h.yaml --help-config
+usage: moulin v4h.yaml [--MACHINE {whitehawk}] [--ENABLE_DOMU {no,yes}]
+
+Config file description: Xen-Troops development setup for Renesas RCAR Gen4 V4H-based board
+
+optional arguments:
+  --MACHINE {whitehawk}
+                        RCAR Gen4 V4H-based device (default: whitehawk)
+  --ENABLE_DOMU {no,yes}
+                        Build generic Yocto-based DomU (default: no)
+```
+
 You can enable or disable DomU build with `--ENABLE_DOMU=yes` option.
 Be default it is disabled.
 
 So, to build with DomU (generic Yocto-based virtual machine) use the
-following command line: `moulin prod-devel-rcar4.yaml
---ENABLE_DOMU=yes`.
+following command line: `moulin s4.yaml --ENABLE_DOMU=yes`.
 
 Moulin will generate `build.ninja` file. After that run `ninja` to
 build the images. This will take some time and disk space as it builds
@@ -60,7 +72,7 @@ build the images. This will take some time and disk space as it builds
 
 During the build the following artifacts will be created.
 
-After `moulin prod-devel-rcar4.yaml`:
+After `moulin <CPU name>.yaml`:
 ```
 | build.ninja
 ```
@@ -86,7 +98,7 @@ root file systems. Files that are included:
 * Xen policy (`xenpolicy-${MACHINE}`)
 * Device tree (`r8a779f0-${MACHINE}-xen.dtb`)
 * ARM TF BL31 (`bl31-${MACHINE}.srec`)
-* OP-TEE (`tee-${MACHINE}.srec`)
+* OP-TEE (`tee-${MACHINE}.srec`) - for S4 only
 
 To build this archive, you can use target `boot_artifacts` for Ninja:
 
@@ -131,7 +143,7 @@ This XT product provides only one image: `full`.
 You can prepare the image by running
 
 ```
-# rouge prod-devel-rcar4.yaml --ENABLE_DOMU=yes -i full
+# rouge <SOC name>.yaml --ENABLE_DOMU=yes -i full
 ```
 
 This will create file `full.img` in your current directory.
@@ -245,4 +257,28 @@ setenv tftp_kernel_load 'tftp 0x7a000000 Image'
 setenv tftp_xen_load 'tftp 0x48080000 xen-uImage'
 setenv tftp_xenpolicy_load 'tftp 0x7c000000 xenpolicy-s4sk'
 
+```
+
+
+for the V4H board
+```
+setenv bootcmd 'run bootcmd_tftp'
+setenv bootcmd_mmc0 'run mmc0_xen_load; run mmc0_dtb_load; run mmc0_kernel_load; run mmc0_xenpolicy_load; run mmc0_initramfs_load; bootm 0x48080000 0x84000000 0x48000000'
+setenv bootcmd_tftp 'run tftp_xen_load; run tftp_dtb_load; run tftp_kernel_load; run tftp_xenpolicy_load; run tftp_initramfs_load; bootm 0x48080000 0x84000000 0x48000000'
+
+setenv fdt_high 0xFFFFFFFFFFFFFFFF
+setenv initrd_high 0xFFFFFFFFFFFFFFFF
+
+setenv mmc0_dtb_load 'ext4load mmc 0:1 0x48000000 xen.dtb; fdt addr 0x48000000; fdt resize; fdt mknode / boot_dev; fdt set /boot_dev device mmcblk0'
+setenv mmc0_initramfs_load 'ext4load mmc 0:1 0x84000000 uInitramfs'
+setenv mmc0_kernel_load 'ext4load mmc 0:1 0x48300000 Image'
+setenv mmc0_xen_load 'ext4load mmc 0:1 0x48080000 xen'
+setenv mmc0_xenpolicy_load 'ext4load mmc 0:1 0x48070000 xenpolicy'
+
+setenv tftp_configure_nfs 'fdt set /boot_dev device nfs; fdt set /boot_dev my_ip 192.168.1.2; fdt set /boot_dev nfs_server_ip 192.168.1.100; fdt set /boot_dev nfs_dir "/srv/domd"; fdt set /boot_dev domu_nfs_dir "/srv/domu"'
+setenv tftp_dtb_load 'tftp 0x48000000 r8a779g0-whitehawk-xen.dtb; fdt addr 0x48000000; fdt resize; fdt mknode / boot_dev; run tftp_configure_nfs; '
+setenv tftp_initramfs_load 'tftp 0x84000000 uInitramfs'
+setenv tftp_kernel_load 'tftp 0x48300000 Image'
+setenv tftp_xen_load 'tftp 0x48080000 xen-uImage'
+setenv tftp_xenpolicy_load 'tftp 0x48070000 xenpolicy-whitehawk'
 ```

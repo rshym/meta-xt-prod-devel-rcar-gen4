@@ -14,9 +14,9 @@ as Moulin-based project files provide correct entries in local.conf
 This is a release 1.0 of the Xen-based development product for the
 S4-based boards.
 
-This release provides the following features:
+This release provides the following features (depending on the SOC):
 
- - Xen build compatible with S4 SoC
+ - Xen build compatible with S4 and V4H SoC
  - Thin Dom0
  - Driver domain (DomD), which has access to all available hardware
  - Optional generic domain (DomU)
