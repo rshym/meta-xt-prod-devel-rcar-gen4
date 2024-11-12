@@ -1,0 +1,483 @@
+/* Make sure Xen console is enabled. */
+&scif3	{
+	status = "okay";
+};
+
+&gic {
+	#address-cells = <2>;
+	#size-cells = <2>;
+	ranges;
+
+	gic_its: msi-controller@f1040000 {
+		compatible = "arm,gic-v3-its";
+		msi-controller;
+		#msi-cells = <1>;
+		reg = <0x0 0xf1040000 0 0x20000>;
+	};
+};
+
+/ {
+	reserved-memory {
+		/delete-node/ linux,cma@80000000;
+		/delete-node/ linux,vdsp0_region@5d000000;
+		/delete-node/ linux,vdsp1_region@5d800000;
+		/delete-node/ linux,vdsp2_region@5e000000;
+		/delete-node/ linux,vdsp3_region@5e800000;
+		/delete-node/ linux,pap_region@5f000000;
+		/delete-node/ linux,region_40bit@600000000;
+	};
+
+	/delete-node/ cmem;
+};
+
+&gsx {
+	xen,passthrough;
+};
+
+&ipmmu_mm {
+	status = "okay";
+};
+&ipmmu_hc {
+	status = "okay";
+};
+&ipmmu_vc {
+	compatible = "renesas,ipmmu-r8a779g0";
+	status = "okay";
+};
+&ipmmu_ir {
+	status = "okay";
+};
+
+&ipmmu_rt0 {
+	status = "okay";
+};
+&ipmmu_rt1 {
+	status = "okay";
+};
+&ipmmu_ds0{
+	status = "okay";
+};
+&ipmmu_3dg{
+	status = "okay";
+};
+&ipmmu_vi0{
+	status = "okay";
+};
+&ipmmu_vi1{
+	status = "okay";
+};
+&ipmmu_vip0{
+	status = "okay";
+};
+&ipmmu_vip1{
+	status = "okay";
+};
+
+&avb0 {
+	iommus = <&ipmmu_hc 0>;
+};
+
+&avb1 {
+	iommus = <&ipmmu_hc 1>;
+};
+
+&avb2 {
+	iommus = <&ipmmu_hc 2>;
+};
+
+&tsn0 {
+	iommus = <&ipmmu_hc 5>;
+};
+
+&mmc0 {
+	iommus = <&ipmmu_ds0 32>;
+
+};
+
+&pciec0 {
+	iommus = <&ipmmu_hc 32>;
+	msi-map = <0x0 &gic_its 0x0 0x1000>;
+	interrupt-map = <0 0 0 1 &gic 0 0 GIC_SPI 449 IRQ_TYPE_LEVEL_HIGH
+					0 0 0 2 &gic 0 0 GIC_SPI 449 IRQ_TYPE_LEVEL_HIGH
+					0 0 0 3 &gic 0 0 GIC_SPI 449 IRQ_TYPE_LEVEL_HIGH
+					0 0 0 4 &gic 0 0 GIC_SPI 449 IRQ_TYPE_LEVEL_HIGH>;
+};
+
+&pciec1 {
+	iommus = <&ipmmu_hc 48>;
+	interrupt-map = <0 0 0 1 &gic 0 0 GIC_SPI 456 IRQ_TYPE_LEVEL_HIGH
+					0 0 0 2 &gic 0 0 GIC_SPI 456 IRQ_TYPE_LEVEL_HIGH
+					0 0 0 3 &gic 0 0 GIC_SPI 456 IRQ_TYPE_LEVEL_HIGH
+					0 0 0 4 &gic 0 0 GIC_SPI 456 IRQ_TYPE_LEVEL_HIGH>;
+};
+
+/delete-node/ &pciec0_ep;
+/delete-node/ &pciec1_ep;
+&avb0			{ xen,passthrough; };
+&avb1			{ xen,passthrough; };
+&avb2			{ xen,passthrough; };
+&tsn0			{ xen,passthrough; };
+&i2c0			{ xen,passthrough; };
+&i2c1			{ xen,passthrough; };
+&i2c2			{ xen,passthrough; };
+&i2c3			{ xen,passthrough; };
+&i2c4			{ xen,passthrough; };
+&i2c5			{ xen,passthrough; };
+&vin00          { xen,passthrough; };
+&vin01          { xen,passthrough; };
+&vin02          { xen,passthrough; };
+&vin03          { xen,passthrough; };
+&vin10          { xen,passthrough; };
+&vin11          { xen,passthrough; };
+&vin12          { xen,passthrough; };
+&vin13          { xen,passthrough; };
+&csi40		   	{ xen,passthrough; };
+&csi41		   	{ xen,passthrough; };
+&dmac0			{ xen,passthrough; };
+&dmac1			{ xen,passthrough; };
+&rt_dmac0		{ xen,passthrough; };
+&rt_dmac1		{ xen,passthrough; };
+&rt_dmac2		{ xen,passthrough; };
+&rt_dmac3		{ xen,passthrough; };
+&gpio0			{ xen,passthrough; };
+&gpio1			{ xen,passthrough; };
+&gpio2			{ xen,passthrough; };
+&gpio3			{ xen,passthrough; };
+&gpio4			{ xen,passthrough; };
+&gpio5			{ xen,passthrough; };
+&gpio6			{ xen,passthrough; };
+&gpio7			{ xen,passthrough; };
+&gpio8			{ xen,passthrough; };
+&i2c4			{ xen,passthrough; };
+&mmc0			{ xen,passthrough; };
+&pciec0			{ xen,passthrough; };
+&pciec1			{ xen,passthrough; };
+&scif0			{ xen,passthrough; };
+&hscif1			{ xen,passthrough; };
+&tsc			{ xen,passthrough; };
+&vspd0 { xen,passthrough; };
+&vspd1 { xen,passthrough; };
+&du { xen,passthrough; };
+&dsc { xen,passthrough; };
+&dsi0 { xen,passthrough; };
+&dsi1 { xen,passthrough; };
+&isp0 { xen,passthrough; };
+&isp1 { xen,passthrough; };
+
+/delete-node/ &tisp0;
+/delete-node/ &tisp1;
+
+
+/ {
+	soc {
+		apb@ff290000                             { xen,passthrough; };
+		caiplite0                                { xen,passthrough; };
+		caiplite1                                { xen,passthrough; };
+		caiplite2                                { xen,passthrough; };
+		caiplite3                                { xen,passthrough; };
+		caiplite4                                { xen,passthrough; };
+		caiplite5                                { xen,passthrough; };
+		caiplite6                                { xen,passthrough; };
+		caiplite7                                { xen,passthrough; };
+		cbf@ff0e8000                             { xen,passthrough; };
+		cisp@fec00000                            { xen,passthrough; };
+		cisp@fee00000                            { xen,passthrough; };
+		cnn-ram@ed400000                         { xen,passthrough; };
+		cnn-ram@ed600000                         { xen,passthrough; };
+		cnn-ram@ffab0000                         { xen,passthrough; };
+		dcm@ff080000                             { xen,passthrough; };
+		dma-controller@ffa80000                  { xen,passthrough; };
+		dma-controller@ffb80000                  { xen,passthrough; };
+		doc0_01                                  { xen,passthrough; };
+		doc@feba0000                             { xen,passthrough; };
+		dof_err_00                               { xen,passthrough; };
+		dof_fcprm                                { xen,passthrough; };
+		dof_sts_00                               { xen,passthrough; };
+		dsc@feb8d000                             { xen,passthrough; };
+		dul@ff298000                             { xen,passthrough; };
+		fba@e7b61000                             { xen,passthrough; };
+		fba@e7b62000                             { xen,passthrough; };
+		fba@e7b63000                             { xen,passthrough; };
+		fba@e7b64000                             { xen,passthrough; };
+		fba@fe601000                             { xen,passthrough; };
+		fba@fe602000                             { xen,passthrough; };
+		fba@fe603000                             { xen,passthrough; };
+		fba@fe605000                             { xen,passthrough; };
+		fba@fe606000                             { xen,passthrough; };
+		fba@feac1000                             { xen,passthrough; };
+		fba@feac2000                             { xen,passthrough; };
+		fba@ff870000                             { xen,passthrough; };
+		fba@ff871000                             { xen,passthrough; };
+		fba@ff872000                             { xen,passthrough; };
+		fba@ff873000                             { xen,passthrough; };
+		fba@ff874000                             { xen,passthrough; };
+		fba@ff875000                             { xen,passthrough; };
+		fba@ff8c0000                             { xen,passthrough; };
+		fba@ff8c1000                             { xen,passthrough; };
+		fba@ff8c2000                             { xen,passthrough; };
+		fba@ff8c3000                             { xen,passthrough; };
+		fba@ff8c4000                             { xen,passthrough; };
+		fba@ff8c5000                             { xen,passthrough; };
+		fba@ff8c6000                             { xen,passthrough; };
+		fba@ff8c7000                             { xen,passthrough; };
+		fba@ff8f4000                             { xen,passthrough; };
+		fba@ff8f5000                             { xen,passthrough; };
+		fba@fff50000                             { xen,passthrough; };
+		fba@fff55000                             { xen,passthrough; };
+		fba@fff56000                             { xen,passthrough; };
+		fba@fff57000                             { xen,passthrough; };
+		fba@fff64000                             { xen,passthrough; };
+		fba@fff65000                             { xen,passthrough; };
+		fba@fff66000                             { xen,passthrough; };
+		fba@fff67000                             { xen,passthrough; };
+		fbs@ff200000                             { xen,passthrough; };
+		fcpvs@fedb0000                           { xen,passthrough; };
+		fcpvs@fedb8000                           { xen,passthrough; };
+		hsm@ff000000                             { xen,passthrough; };
+		icumx_cmd0_01                            { xen,passthrough; };
+		icumx_cmd0_02                            { xen,passthrough; };
+		icumx_cmd0_03                            { xen,passthrough; };
+		icumx_cmd0_04                            { xen,passthrough; };
+		icumx_cmd0_05                            { xen,passthrough; };
+		icumx_cmd0_06                            { xen,passthrough; };
+		icumx_cmd0_07                            { xen,passthrough; };
+		icumx_cmd0_08                            { xen,passthrough; };
+		icumx_cmd0_09                            { xen,passthrough; };
+		icumx_cmd0_10                            { xen,passthrough; };
+		icumx_cmd0_11                            { xen,passthrough; };
+		icumx_cmd0_12                            { xen,passthrough; };
+		icumx_cmd0_13                            { xen,passthrough; };
+		icumx_cmd0_14                            { xen,passthrough; };
+		icumx_cmd0_15                            { xen,passthrough; };
+		icumx_cmd0_16                            { xen,passthrough; };
+		icumx_cmd0_17                            { xen,passthrough; };
+		icumx_cmd0_18                            { xen,passthrough; };
+		icumx_cmd0_19                            { xen,passthrough; };
+		icumx_cmd@e6610000                       { xen,passthrough; };
+		imp-cnn@ffaa0000                         { xen,passthrough; };
+		imp-core@ffa00000                        { xen,passthrough; };
+		imp-core@ffa20000                        { xen,passthrough; };
+		imp-core@ffb00000                        { xen,passthrough; };
+		imp-core@ffb20000                        { xen,passthrough; };
+		imp-cve@ffa40000                         { xen,passthrough; };
+		imp-cve@ffa50000                         { xen,passthrough; };
+		imp-cve@ffa60000                         { xen,passthrough; };
+		imp-cve@ffa70000                         { xen,passthrough; };
+		imp-distributer0@ff900000                { xen,passthrough; };
+		imp-distributer1@ff900000                { xen,passthrough; };
+		imp-distributer2@ff900000                { xen,passthrough; };
+		imp-dmac-slim@ffa90000                   { xen,passthrough; };
+		imp-dmac-slim@ffa94000                   { xen,passthrough; };
+		imp-dta@ffa88000                         { xen,passthrough; };
+		imp-psc@ffa84000                         { xen,passthrough; };
+		imp-ram@ed300000                         { xen,passthrough; };
+		imp-ram@ffa8c000                         { xen,passthrough; };
+		impvdsp00_00_01                          { xen,passthrough; };
+		impvdsp00_00_02                          { xen,passthrough; };
+		impvdsp00_00_03                          { xen,passthrough; };
+		impvdsp00_00_04                          { xen,passthrough; };
+		impvdsp01_00_01                          { xen,passthrough; };
+		impvdsp01_00_02                          { xen,passthrough; };
+		impvdsp01_00_03                          { xen,passthrough; };
+		impvdsp01_00_04                          { xen,passthrough; };
+		impvdsp02_00_01                          { xen,passthrough; };
+		impvdsp02_00_02                          { xen,passthrough; };
+		impvdsp02_00_03                          { xen,passthrough; };
+		impvdsp02_00_04                          { xen,passthrough; };
+		impvdsp03_00_01                          { xen,passthrough; };
+		impvdsp03_00_02                          { xen,passthrough; };
+		impvdsp03_00_03                          { xen,passthrough; };
+		impvdsp03_00_04                          { xen,passthrough; };
+		imr@fe880000                             { xen,passthrough; };
+		imr@fe890000                             { xen,passthrough; };
+		imr@fe8a0000                             { xen,passthrough; };
+		ims@fe860000                             { xen,passthrough; };
+		ims@fe870000                             { xen,passthrough; };
+		ipmmu_mm0                                { xen,passthrough; };
+		ipmmu_mm0_01                             { xen,passthrough; };
+		irq_ivcp1e_00_01                         { xen,passthrough; };
+		irq_vcp4_00_01                           { xen,passthrough; };
+		ism@ff100000                             { xen,passthrough; };
+		ism@ff120000                             { xen,passthrough; };
+		ivcp1e_00                                { xen,passthrough; };
+		osm@ff0f0000                             { xen,passthrough; };
+		rfso@ffe80000                            { xen,passthrough; };
+		rfso@ffe81000                            { xen,passthrough; };
+		rfso@ffe82000                            { xen,passthrough; };
+		rfso@ffe83000                            { xen,passthrough; };
+		rfso@ffe84000                            { xen,passthrough; };
+		rfso@ffe85000                            { xen,passthrough; };
+		rfso@ffe86000                            { xen,passthrough; };
+		rfso@ffe87000                            { xen,passthrough; };
+		rfso@ffe88000                            { xen,passthrough; };
+		rfso@ffe89000                            { xen,passthrough; };
+		rfso@ffe8a000                            { xen,passthrough; };
+		rtdmac_control@ffc10000                  { xen,passthrough; };
+		rtdmac_control@ffc11000                  { xen,passthrough; };
+		rtdmac_control@ffc12000                  { xen,passthrough; };
+		rtdmac_control@ffc13000                  { xen,passthrough; };
+		rtdmac_control@ffc14000                  { xen,passthrough; };
+		rtdmac_control@ffc15000                  { xen,passthrough; };
+		rtdmac_control@ffc16000                  { xen,passthrough; };
+		rtdmac_control@ffc17000                  { xen,passthrough; };
+		rtdmac_control@ffc18000                  { xen,passthrough; };
+		rtdmac_control@ffc19000                  { xen,passthrough; };
+		rtdmac_control@ffc1a000                  { xen,passthrough; };
+		rtdmac_control@ffc1b000                  { xen,passthrough; };
+		rtdmac_control@ffc1c000                  { xen,passthrough; };
+		rtdmac_control@ffc1d000                  { xen,passthrough; };
+		rtdmac_control@ffc1e000                  { xen,passthrough; };
+		rtdmac_control@ffc1f000                  { xen,passthrough; };
+		rtdmac_control@ffc20000                  { xen,passthrough; };
+		rtdmac_control@ffc21000                  { xen,passthrough; };
+		rtdmac_control@ffc22000                  { xen,passthrough; };
+		rtdmac_control@ffc23000                  { xen,passthrough; };
+		rtdmac_control@ffc24000                  { xen,passthrough; };
+		rtdmac_control@ffc25000                  { xen,passthrough; };
+		rtdmac_control@ffc26000                  { xen,passthrough; };
+		rtdmac_control@ffc27000                  { xen,passthrough; };
+		rtdmac_control@ffc28000                  { xen,passthrough; };
+		rtdmac_control@ffc29000                  { xen,passthrough; };
+		rtdmac_control@ffc2a000                  { xen,passthrough; };
+		rtdmac_control@ffc2b000                  { xen,passthrough; };
+		rtdmac_control@ffc2c000                  { xen,passthrough; };
+		rtdmac_control@ffc2d000                  { xen,passthrough; };
+		rtdmac_control@ffc2e000                  { xen,passthrough; };
+		rtdmac_control@ffc2f000                  { xen,passthrough; };
+		rtdmac_control@ffd70000                  { xen,passthrough; };
+		rtdmac_control@ffd71000                  { xen,passthrough; };
+		rtdmac_control@ffd72000                  { xen,passthrough; };
+		rtdmac_control@ffd73000                  { xen,passthrough; };
+		rtdmac_control@ffd74000                  { xen,passthrough; };
+		rtdmac_control@ffd75000                  { xen,passthrough; };
+		rtdmac_control@ffd76000                  { xen,passthrough; };
+		rtdmac_control@ffd77000                  { xen,passthrough; };
+		rtdmac_control@ffd78000                  { xen,passthrough; };
+		rtdmac_control@ffd79000                  { xen,passthrough; };
+		rtdmac_control@ffd7a000                  { xen,passthrough; };
+		rtdmac_control@ffd7b000                  { xen,passthrough; };
+		rtdmac_control@ffd7c000                  { xen,passthrough; };
+		rtdmac_control@ffd7d000                  { xen,passthrough; };
+		rtdmac_control@ffd7e000                  { xen,passthrough; };
+		rtdmac_control@ffd7f000                  { xen,passthrough; };
+		rtdmac_control@ffd80000                  { xen,passthrough; };
+		rtdmac_control@ffd81000                  { xen,passthrough; };
+		rtdmac_control@ffd82000                  { xen,passthrough; };
+		rtdmac_control@ffd83000                  { xen,passthrough; };
+		rtdmac_control@ffd84000                  { xen,passthrough; };
+		rtdmac_control@ffd85000                  { xen,passthrough; };
+		rtdmac_control@ffd86000                  { xen,passthrough; };
+		rtdmac_control@ffd87000                  { xen,passthrough; };
+		rtdmac_control@ffd88000                  { xen,passthrough; };
+		rtdmac_control@ffd89000                  { xen,passthrough; };
+		rtdmac_control@ffd8a000                  { xen,passthrough; };
+		rtdmac_control@ffd8b000                  { xen,passthrough; };
+		rtdmac_control@ffd8c000                  { xen,passthrough; };
+		rtdmac_control@ffd8d000                  { xen,passthrough; };
+		rtdmac_control@ffd8e000                  { xen,passthrough; };
+		rtdmac_control@ffd8f000                  { xen,passthrough; };
+		sbf@ff0ec000                             { xen,passthrough; };
+		sdma@ff180000                            { xen,passthrough; };
+		sdmac0_01                                { xen,passthrough; };
+		smd_post_err_00                          { xen,passthrough; };
+		smd_post_sts_00                          { xen,passthrough; };
+		smd_ps_err_00                            { xen,passthrough; };
+		smd_ps_sts_00                            { xen,passthrough; };
+		ssi-0                                    { xen,passthrough; };
+		vcpl4@fe910000                           { xen,passthrough; };
+		vdsp@f1400000                            { xen,passthrough; };
+		vdsp@f1600000                            { xen,passthrough; };
+		vdsp@f1800000                            { xen,passthrough; };
+		vdsp@f1a00000                            { xen,passthrough; };
+		video@e6ef4000                           { xen,passthrough; };
+		video@e6ef5000                           { xen,passthrough; };
+		video@e6ef6000                           { xen,passthrough; };
+		video@e6ef7000                           { xen,passthrough; };
+		video@e6efc000                           { xen,passthrough; };
+		video@e6efd000                           { xen,passthrough; };
+		video@e6efe000                           { xen,passthrough; };
+		video@e6eff000                           { xen,passthrough; };
+		vip_wrap                                 { xen,passthrough; };
+		vspx@fedd0000                            { xen,passthrough; };
+		vspx@fedd8000                            { xen,passthrough; };
+		wwdt0_01                                 { xen,passthrough; };
+		wwdt1_01                                 { xen,passthrough; };
+		wwdt2_01                                 { xen,passthrough; };
+		wwdt3_01                                 { xen,passthrough; };
+		wwdt4_01                                 { xen,passthrough; };
+		wwdt5_01                                 { xen,passthrough; };
+		wwdt6_01                                 { xen,passthrough; };
+		wwdt7_01                                 { xen,passthrough; };
+		wwdt8_01                                 { xen,passthrough; };
+		wwdt9_01                                 { xen,passthrough; };
+		wwdt@ffc90000                            { xen,passthrough; };
+		wwdt@ffca0000                            { xen,passthrough; };
+		wwdt@ffcb0000                            { xen,passthrough; };
+		wwdt@ffcc0000                            { xen,passthrough; };
+		wwdt@ffcf0000                            { xen,passthrough; };
+		wwdt@ffef0000                            { xen,passthrough; };
+		wwdt@fff10000                            { xen,passthrough; };
+		wwdt@fff20000                            { xen,passthrough; };
+		wwdt@fff30000                            { xen,passthrough; };
+		wwdt@fff40000                            { xen,passthrough; };
+
+		/delete-node/du0;
+		/delete-node/du_01;
+		/delete-node/dsi0_01;
+		/delete-node/dsi0_02;
+		/delete-node/dsi0_03;
+		/delete-node/dsi0_04;
+		/delete-node/dsi0_05;
+		/delete-node/dsi0_06;
+		/delete-node/dsi0_07;
+		/delete-node/dsi0_08;
+		/delete-node/dsi1_01;
+		/delete-node/dsi1_02;
+		/delete-node/dsi1_03;
+		/delete-node/dsi1_04;
+		/delete-node/dsi1_05;
+		/delete-node/dsi1_06;
+		/delete-node/dsi1_07;
+		/delete-node/dsi1_08;
+		/delete-node/iccom00;
+		/delete-node/iccom01;
+		/delete-node/iccom02;
+		/delete-node/iccom03;
+		/delete-node/iccom04;
+		/delete-node/iccom05;
+		/delete-node/iccom06;
+		/delete-node/iccom07;
+		/delete-node/iccom08;
+		/delete-node/iccom09;
+		/delete-node/iccom10;
+		/delete-node/iccom11;
+		/delete-node/impvdsp00_01;
+		/delete-node/impvdsp00_02;
+		/delete-node/impvdsp00_03;
+		/delete-node/impvdsp00_04;
+		/delete-node/impvdsp00_05;
+		/delete-node/impvdsp00_06;
+		/delete-node/impvdsp00_07;
+		/delete-node/impvdsp01_01;
+		/delete-node/impvdsp01_02;
+		/delete-node/impvdsp01_03;
+		/delete-node/impvdsp01_04;
+		/delete-node/impvdsp01_05;
+		/delete-node/impvdsp01_06;
+		/delete-node/impvdsp01_07;
+		/delete-node/impvdsp02_01;
+		/delete-node/impvdsp02_02;
+		/delete-node/impvdsp02_03;
+		/delete-node/impvdsp02_04;
+		/delete-node/impvdsp02_05;
+		/delete-node/impvdsp02_06;
+		/delete-node/impvdsp02_07;
+		/delete-node/impvdsp03_01;
+		/delete-node/impvdsp03_02;
+		/delete-node/impvdsp03_03;
+		/delete-node/impvdsp03_04;
+		/delete-node/impvdsp03_05;
+		/delete-node/impvdsp03_06;
+		/delete-node/impvdsp03_07;
+	};
+};
