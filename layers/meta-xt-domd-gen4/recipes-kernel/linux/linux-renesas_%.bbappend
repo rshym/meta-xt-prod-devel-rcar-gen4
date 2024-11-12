@@ -19,5 +19,16 @@ SRC_URI:append:r8a779f0 = " \
     file://0005-HACK-pcie-renesas-emulate-reading-from-ECAM-under-Xe.patch \
 "
 
+SRC_URI:append:r8a779g0 = " \
+    file://0001-xen-Initial-version-of-Xen-passthrough-helper-driver.patch \
+    file://r8a779g0-xen-chosen.dtsi;subdir=git/arch/arm64/boot/dts/renesas \
+    file://r8a779g0-domd.dts;subdir=git/arch/arm64/boot/dts/renesas \
+    file://r8a779g0-xen.dts;subdir=git/arch/arm64/boot/dts/renesas \
+"
+
+SRC_URI:remove:r8a779g0 = " \
+    file://0001-arm64-dts-renesas-r8a779g0-Add-Native-device-support.patch \
+"
+
 KERNEL_MODULE_PROBECONF += "ixgbevf"
 module_conf_ixgbevf = "blacklist ixgbevf"
