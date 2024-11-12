@@ -1,5 +1,5 @@
 #include "r8a779f0-s4sk.dts"
-#include "xen-chosen.dtsi"
+#include "r8a779f0-xen-chosen.dtsi"
 #include "r8a779f0-xen.dts"
 
 / {
