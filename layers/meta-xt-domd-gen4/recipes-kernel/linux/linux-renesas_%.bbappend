@@ -4,6 +4,12 @@ RENESAS_BSP_URL = "git://github.com/xen-troops/linux.git"
 BRANCH = "${XT_KERNEL_BRANCH}"
 SRCREV = "${XT_KERNEL_REV}"
 
+# V4H uses dedicated meta layer meta-rcar-bsp, with its own settings,
+# like RENESAS_BSP_BRANCH instead of BRANCH.
+RENESAS_BSP_URL:r8a779g0 = "git://github.com/renesas-rcar/linux-bsp.git;protocol=https"
+RENESAS_BSP_BRANCH:r8a779g0 = "v5.10.147/rcar-5.2.0.rc17"
+SRCREV:r8a779g0 = "3bef1d681c2159110ac6d493a1ee8271bccd631f"
+
 SRC_URI:append = " \
     file://ixgbe.cfg \
     file://multicast_routing.cfg \
