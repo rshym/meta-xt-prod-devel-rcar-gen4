@@ -1,6 +1,9 @@
 IMAGE_INSTALL:append = " \
     pciutils \
     devmem2 \
+"
+
+IMAGE_INSTALL:append:r8a779f0 = " \
     iccom-support \
     optee-test \
 "
