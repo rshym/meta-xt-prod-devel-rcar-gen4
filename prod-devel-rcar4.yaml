@@ -264,6 +264,8 @@ parameters:
         components:
           domd:
             builder:
+              conf:
+                - [BBMASK:append, " u-boot_2022.01"]
               layers:
                 - "../meta-renesas/meta-rcar-gateway"
           domu:
@@ -277,6 +279,8 @@ parameters:
         components:
           domd:
             builder:
+              conf:
+                - [BBMASK:append, " u-boot_2022.01"]
               layers:
                 - "../meta-renesas/meta-rcar-gateway"
           domu:
@@ -292,6 +296,8 @@ parameters:
         components:
           domd:
             builder:
+              conf:
+                - [BBMASK:append, " u-boot_2020.10"]
               layers:
                 - "../meta-renesas/meta-rcar-bsp"
                 - "../meta-renesas/meta-rcar-adas"
