@@ -40,8 +40,8 @@ common_data:
       url: https://github.com/renesas-rcar/meta-renesas.git
       rev: "bdab02fbfbbd79565b6db52a6fa62aad9b15aa99" # scarthgap-dev
     - type: git
-      url: https://github.com/xen-troops/meta-xt-rcar
-      rev: "aaf7d0ba3c11ee5a9876d1a8b0b875b9dedfc1a3" # master
+      url: https://github.com/rshym/meta-xt-rcar
+      rev: "mr_xt-rcar-bsp"
 
   # Common configuration options for all yocto-based domains
   conf: &COMMON_CONF
