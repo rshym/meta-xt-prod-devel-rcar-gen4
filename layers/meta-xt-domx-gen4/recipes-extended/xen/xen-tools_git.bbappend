@@ -13,6 +13,7 @@ PACKAGES:append = "\
 FILES:${PN}-test = "\
     ${libdir}/xen/bin/test-xenstore \
     ${libdir}/xen/bin/test-resource \
+    ${libdir}/xen/bin/test-paging-mempool \
 "
 
 FILES:${PN}-pcid = "\

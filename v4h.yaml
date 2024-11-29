@@ -106,8 +106,8 @@ components:
         - [BAD_RECOMMENDATIONS:append, " udev-hwdb"]
         # Do not install kernel image to rootfs to decrease initrd size
         - ["RRECOMMENDS:${KERNEL_PACKAGE_NAME}-base", ""]
-        - [PREFERRED_VERSION_xen-tools, "4.17.0+git%"]
-        - [PREFERRED_VERSION_xen, "4.17.0+git%"]
+        - [PREFERRED_VERSION_xen-tools, "4.19.0+git%"]
+        - [PREFERRED_VERSION_xen, "4.19.0+git%"]
       layers:
         - "../meta-virtualization"
         - "../meta-openembedded/meta-oe"
@@ -151,8 +151,8 @@ components:
         - [IMAGE_INSTALL:append, " smcroute"]
         - [IMAGE_INSTALL:append, " snort"]
         - [EXTRA_IMAGEDEPENDS:append, " boot-script"]
-        - [PREFERRED_VERSION_xen-tools, "4.17.0+git%"]
-        - [PREFERRED_VERSION_xen, "4.17.0+git%"]
+        - [PREFERRED_VERSION_xen-tools, "4.19.0+git%"]
+        - [PREFERRED_VERSION_xen, "4.19.0+git%"]
       build_target: "%{BUILD_TARGET_DOMD}"
       layers:
         - "../meta-virtualization"
