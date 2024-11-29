@@ -1,0 +1,213 @@
+From a7fc6c6542d59feae5efa570c52dd511ec1c908d Mon Sep 17 00:00:00 2001
+From: Grygorii Strashko <grygorii_strashko@epam.com>
+Date: Wed, 23 Oct 2024 17:28:20 +0300
+Subject: [PATCH] [HACK][DBG] drivers/uio/uio_pdrv_genirq: override pm
+
+Override power management to allow camera app to start.
+
+Signed-off-by: Grygorii Strashko <grygorii_strashko@epam.com>
+---
+ drivers/uio/uio_pdrv_genirq.c | 77 ++++++++++++++++++++---------------
+ 1 file changed, 45 insertions(+), 32 deletions(-)
+
+diff --git a/drivers/uio/uio_pdrv_genirq.c b/drivers/uio/uio_pdrv_genirq.c
+index eb2ab236f6ae..8a374ab847e0 100644
+--- a/drivers/uio/uio_pdrv_genirq.c
++++ b/drivers/uio/uio_pdrv_genirq.c
+@@ -96,7 +96,7 @@ static int local_clk_enable(struct uio_pdrv_genirq_platdata *priv)
+ 	int ret = 0;
+ 
+ 	if (priv->clk_cnt == 0) {
+-		ret = clk_enable(priv->clk);
++		//ret = clk_enable(priv->clk);
+ 		priv->clk_cnt++;
+ 	}
+ 
+@@ -106,13 +106,16 @@ static int local_clk_enable(struct uio_pdrv_genirq_platdata *priv)
+ static void local_clk_disable(struct uio_pdrv_genirq_platdata *priv)
+ {
+ 	if (priv->clk_cnt > 0) {
+-		clk_disable(priv->clk);
++		//clk_disable(priv->clk);
+ 		priv->clk_cnt--;
+ 	}
+ }
+ 
+ static int uio_pdrv_genirq_open(struct uio_info *info, struct inode *inode)
+ {
++	struct uio_pdrv_genirq_platdata *priv = info->priv;
++
++	dev_err(&priv->pdev->dev, "device open %s\n", priv->uioinfo->name);
+ 	return 0;
+ }
+ 
+@@ -148,8 +151,8 @@ static int priv_set_pwr(struct uio_info *info, int value)
+ 	struct uio_pdrv_genirq_platdata *priv = info->priv;
+ 
+ 	if (priv->pd) {
+-		dev_dbg(&priv->pdev->dev, "device has not power-domains to set\n");
+-		ret = -EOPNOTSUPP;
++		dev_err(&priv->pdev->dev, "device has not power-domains to set\n");
++//		ret = -EOPNOTSUPP;
+ 		return ret;
+ 	}
+ 
+@@ -161,7 +164,7 @@ static int priv_set_pwr(struct uio_info *info, int value)
+ 			ret = local_pm_runtime_get_sync(priv);
+ 	}
+ 
+-	dev_dbg(&priv->pdev->dev, "Set power state value=0x%x pwr_cnt=%d, clk_cnt=%d\n",
++	dev_err(&priv->pdev->dev, "Set power state value=0x%x pwr_cnt=%d, clk_cnt=%d\n",
+ 		value, priv->pwr_cnt, priv->clk_cnt);
+ 
+ 	return ret;
+@@ -175,12 +178,13 @@ static int priv_get_pwr(struct uio_info *info)
+ 	struct uio_pdrv_genirq_platdata *priv = info->priv;
+ 
+ 	if (priv->pd) {
+-		dev_dbg(&priv->pdev->dev, "device has not power-domains to get\n");
+-		priv->pwr_cnt = -EOPNOTSUPP;
+-		return priv->pwr_cnt;
++		dev_err(&priv->pdev->dev, "device has not power-domains to get\n");
++//		priv->pwr_cnt = -EOPNOTSUPP;
++//		return priv->pwr_cnt;
++		return 1;
+ 	}
+ 
+-	dev_dbg(&priv->pdev->dev, "Get power state pwr_cnt=%d, clk_cnt=%d\n",
++	dev_err(&priv->pdev->dev, "Get power state pwr_cnt=%d, clk_cnt=%d\n",
+ 		priv->pwr_cnt, priv->clk_cnt);
+ 	return priv->pwr_cnt;
+ }
+@@ -195,18 +199,18 @@ static int priv_set_clk(struct uio_info *info, int value)
+ 	int ret = 0;
+ 	struct uio_pdrv_genirq_platdata *priv = info->priv;
+ 
+-	if (!priv->clk) {
+-		dev_dbg(&priv->pdev->dev, "device has not clk to set\n");
+-		ret = -EOPNOTSUPP;
+-		return ret;
+-	}
++//	if (!priv->clk) {
++//		dev_err(&priv->pdev->dev, "device has not clk to set\n");
++//		ret = -EOPNOTSUPP;
++//		return ret;
++//	}
+ 
+ 	if (value == 0)
+ 		local_clk_disable(priv);
+ 	else
+ 		ret = local_clk_enable(priv);
+ 
+-	dev_dbg(&priv->pdev->dev, "Set clock state - value = 0x%x clk_cnt=%d\n",
++	dev_err(&priv->pdev->dev, "Set clock state - value = 0x%x clk_cnt=%d\n",
+ 		value, priv->clk_cnt);
+ 
+ 	return ret;
+@@ -220,13 +224,14 @@ static int priv_get_clk(struct uio_info *info)
+ {
+ 	struct uio_pdrv_genirq_platdata *priv = info->priv;
+ 
+-	if (!priv->clk) {
+-		dev_dbg(&priv->pdev->dev, "device has not clk to get\n");
+-		priv->clk_cnt = -EOPNOTSUPP;
+-		return priv->clk_cnt;
+-	}
++//	if (!priv->clk) {
++//		dev_err(&priv->pdev->dev, "device has not clk to get\n");
++//		priv->clk_cnt = -EOPNOTSUPP;
++//		return priv->clk_cnt;
++//		return 1;
++//	}
+ 
+-	dev_dbg(&priv->pdev->dev, "Get clock state - clk_cnt=%d\n",
++	dev_err(&priv->pdev->dev, "Get clock state - clk_cnt=%d\n",
+ 		priv->clk_cnt);
+ 
+ 	return priv->clk_cnt;
+@@ -238,20 +243,20 @@ static int priv_clk_get_div(struct uio_info *info)
+ 	unsigned long rate, div;
+ 	struct clk *parent;
+ 
+-	rate = clk_get_rate(priv->clk);
+ 	if (!priv->clk) {
+-		dev_dbg(&priv->pdev->dev, "device has not clk to get div\n");
++		dev_err(&priv->pdev->dev, "device has not clk to get div\n");
+ 		div = -EOPNOTSUPP;
+ 		return div;
+ 	}
+ 
++	rate = clk_get_rate(priv->clk);
+ 	if (!rate)
+ 		return 0;
+ 
+ 	parent = clk_get_parent(priv->clk);
+ 	div = clk_get_rate(parent) / rate;
+ 
+-	dev_dbg(&priv->pdev->dev, "Get clock div = %lu\n", div);
++	dev_err(&priv->pdev->dev, "Get clock div = %lu\n", div);
+ 
+ 	return div;
+ }
+@@ -266,6 +271,12 @@ static int priv_clk_set_div(struct uio_info *info, int div)
+ 	if (div <= 0)
+ 		return -EINVAL;
+ 
++	if (!priv->clk) {
++		dev_err(&priv->pdev->dev, "device has not clk to set div %d\n", div);
++		div = -EOPNOTSUPP;
++		return div;
++	}
++
+ 	hw = __clk_get_hw(priv->clk);
+ 
+ 	if (!hw) {
+@@ -280,7 +291,7 @@ static int priv_clk_set_div(struct uio_info *info, int div)
+ 	parent = clk_get_parent(priv->clk);
+ 	value = clk_get_rate(parent) / div;
+ 
+-	dev_dbg(&priv->pdev->dev, "Set clock div = %i\n", div);
++	dev_err(&priv->pdev->dev, "Set clock div = %i\n", div);
+ 
+ 	return clk_set_rate(priv->clk, value);
+ }
+@@ -291,9 +302,10 @@ static int priv_set_rst(struct uio_info *info, int value)
+ 	int status, ret;
+ 
+ 	if (!priv->rst) {
+-		dev_dbg(&priv->pdev->dev, "device has not reset to set\n");
+-		ret = -EOPNOTSUPP;
+-		return ret;
++		dev_err(&priv->pdev->dev, "device has not reset to set\n");
++//		ret = -EOPNOTSUPP;
++//		return ret;
++		return 0;
+ 	}
+ 
+ 	status = reset_control_status(priv->rst);
+@@ -312,7 +324,7 @@ static int priv_set_rst(struct uio_info *info, int value)
+ 		break;
+ 	}
+ 
+-	dev_dbg(&priv->pdev->dev, "Set reset state - value = 0x%x\n", value);
++	dev_err(&priv->pdev->dev, "Set reset state - value = 0x%x\n", value);
+ 
+ 	return ret;
+ }
+@@ -323,9 +335,10 @@ static int priv_get_rst(struct uio_info *info)
+ 	int status;
+ 
+ 	if (!priv->rst) {
+-		dev_dbg(&priv->pdev->dev, "device has not reset to get\n");
+-		status = -EOPNOTSUPP;
+-		return status;
++		dev_err(&priv->pdev->dev, "device has not reset to get\n");
++//		status = -EOPNOTSUPP;
++//		return status;
++		return 0;
+ 	}
+ 
+ 	status = reset_control_status(priv->rst);
+-- 
+2.34.1
+
