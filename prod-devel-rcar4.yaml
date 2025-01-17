@@ -220,7 +220,7 @@ components:
       build_target: "%{BUILD_TARGET_DOMU}"
       target_images:
         - "tmp/deploy/images/%{MACHINE}/Image"
-        - "tmp/deploy/images/%{MACHINE}/%{BUILD_TARGET_DOMU}-%{MACHINE}.rootfs.ext4"
+        - "tmp/deploy/images/%{MACHINE}/%{BUILD_TARGET_DOMU}-v4h.ext4"
   boot_artifacts:
     build-dir: "artifacts"
     builder:
@@ -337,4 +337,4 @@ parameters:
               domu-rootfs:
                 type: raw_image
                 gpt_type: 0FC63DAF-8483-4772-8E79-3D69D8477DE4 # Linux filesystem data
-                image_path: "%{YOCTOS_WORK_DIR}/%{DOMU_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/%{BUILD_TARGET_DOMU}-%{MACHINE}.rootfs.ext4"
+                image_path: "%{YOCTOS_WORK_DIR}/%{DOMU_BUILD_DIR}/tmp/deploy/images/%{MACHINE}/%{BUILD_TARGET_DOMU}-v4h.ext4"
