@@ -1,0 +1,1092 @@
+/dts-v1/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/interrupt-controller/arm-gic.h>
+#include <dt-bindings/media/r8a779g0-csi2.h>
+#include <dt-bindings/ipmmu/rcar-ipmmu.h>
+#define PHANDLE_GIC (65000)
+#define PHANDLE_ITS (65002)
+
+/ {
+
+	#address-cells = <2>;
+	#size-cells = <2>;
+
+	reserved-memory {
+		#address-cells = <0x02>;
+		#size-cells = <0x02>;
+		ranges;
+	};
+
+	cmem {
+	};
+
+	passthrough {
+		interrupt-parent = <PHANDLE_GIC>;
+		compatible = "simple-bus";
+		ranges;
+		#address-cells = <2>;
+		#size-cells = <2>;
+
+		gsx: gsx@fd000000 {
+			compatible = "renesas,gsx";
+			reg = <0 0xfd000000 0 0x10000>;
+			interrupts = <GIC_SPI 465 IRQ_TYPE_LEVEL_HIGH>;
+			status = "okay";
+			clocks = <&gsx_ref_clk>;
+			// power-domains = <&sysc R8A779G0_PD_A23DGB>;
+			// resets = <&cpg 0>;
+		};
+
+		dsi-con0 {
+			compatible = "dsi-connector";
+
+			port {
+				dsi_con_out0: endpoint {
+				remote-endpoint = <&sn65dsi86_out0>;
+				};
+			};
+		};
+
+		ref_clk: ref_clk0 {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <38400000>;
+		};
+
+		i2c_ref_clk: ref_clk1 {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <133333328>;
+		};
+
+
+		du_ref_clk0: ref_clk2 {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <266666656>;
+		};
+
+		du_ref_clk1: ref_clk3 {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <266666656>;
+		};
+
+		dsi_ref_clk0: ref_clk4 {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <16666666>;
+		};
+
+		dsi_ref_clk1: ref_clk5 {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <799999968>;
+		};
+
+		pciec_ref_clk: ref_clk6 {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <399999984>;
+		};
+
+		vin_ref_clk: ref_clk7 {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <799999968>;
+		};
+
+		gsx_ref_clk: ref_clk8 {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <599999976>;
+		};
+
+		vspd0: vsp@fea20000 {
+			compatible = "renesas,vsp2", "generic-uio";
+			reg = <0 0xfea20000 0 0x8000>;
+			interrupts = <GIC_SPI 546 IRQ_TYPE_LEVEL_HIGH>;
+			// clocks = <&cpg CPG_MOD 830>;
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			// resets = <&cpg 830>;
+
+			renesas,fcp = <&fcpvd0>;
+			linux,uio-name = "vsp_00";
+		};
+
+		vspd1: vsp@fea28000 {
+			compatible = "renesas,vsp2", "generic-uio";
+			reg = <0 0xfea28000 0 0x8000>;
+			interrupts = <GIC_SPI 551 IRQ_TYPE_LEVEL_HIGH>;
+			// clocks = <&cpg CPG_MOD 831>;
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			// resets = <&cpg 831>;
+
+			renesas,fcp = <&fcpvd1>;
+			linux,uio-name = "vsp_01";
+		};
+
+		fcpvd0: fcp@fea10000 {
+			compatible = "renesas,fcpv";
+			reg = <0 0xfea10000 0 0x200>;
+			// clocks = <&cpg CPG_MOD 508>;
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			// resets = <&cpg 508>;
+		};
+
+		fcpvd1: fcp@fea11000 {
+			compatible = "renesas,fcpv";
+			reg = <0 0xfea11000 0 0x200>;
+			// clocks = <&cpg CPG_MOD 509>;
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			// resets = <&cpg 509>;
+		};
+		du: display@feb00000 {
+			compatible = "renesas,du-r8a779g0";
+			reg = <0 0xfeb00000 0 0x40000>;
+			interrupts = <GIC_SPI 523 IRQ_TYPE_LEVEL_HIGH>,
+					<GIC_SPI 524 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&du_ref_clk0>, <&du_ref_clk1>;
+			clock-names = "du.0", "du.1";
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			// resets = <&cpg 411>;
+			vsps = <&vspd0 0>, <&vspd1 0>;
+			status = "okay";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				port@0 {
+					reg = <0>;
+					du_out_dsi0: endpoint {
+						remote-endpoint = <&dsi0_in>;
+					};
+				};
+
+			};
+		};		
+		dsi0: dsi-encoder@fed80000 {
+			compatible = "renesas,r8a779g0-mipi-dsi";
+			reg = <0 0xfed80000 0 0x10000>;
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			clocks = <&dsi_ref_clk0>, <&dsi_ref_clk1>;
+			clock-names = "mod", "dsi";
+			// resets = <&cpg 415>;
+			status = "okay";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				port@0 {
+					reg = <0>;
+					dsi0_in: endpoint {
+						remote-endpoint = <&du_out_dsi0>;
+					};
+				};
+
+				port@1 {
+					reg = <1>;
+					dsi0_out: endpoint {
+					};
+				};
+			};
+		};
+
+		i2c0: i2c@e6500000 {
+			compatible = "renesas,i2c-r8a779g0",
+				     "renesas,rcar-gen4-i2c";
+			reg = <0 0xe6500000 0 0x40>;
+			interrupts = <GIC_SPI 610 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&i2c_ref_clk>;
+			// clocks = <&cpg CPG_MOD 518>;
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			// resets = <&cpg 518>;
+			// dmas = <&dmac0 0x91>, <&dmac0 0x90>,
+			//        <&dmac1 0x91>, <&dmac1 0x90>;
+			// dma-names = "tx", "rx", "tx", "rx";
+			i2c-scl-internal-delay-ns = <110>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "disabled";
+		};
+
+		i2c1: i2c@e6508000 {
+			compatible = "renesas,i2c-r8a779g0",
+				     "renesas,rcar-gen4-i2c";
+			reg = <0 0xe6508000 0 0x40>;
+			interrupts = <GIC_SPI 611 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&i2c_ref_clk>;
+			// clocks = <&cpg CPG_MOD 519>;
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			// resets = <&cpg 519>;
+			// dmas = <&dmac0 0x93>, <&dmac0 0x92>,
+			//        <&dmac1 0x93>, <&dmac1 0x92>;
+			// dma-names = "tx", "rx", "tx", "rx";
+			i2c-scl-internal-delay-ns = <110>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "okay";
+		};
+
+		isp0: isp@fed00000 {
+			compatible = "renesas,isp-r8a779g0";
+			reg = <0 0xfed00000 0 0x10000>;
+			interrupts = <GIC_SPI 473 IRQ_TYPE_LEVEL_LOW>;
+			// clocks = <&cpg CPG_MOD 612>;
+			// power-domains = <&sysc R8A779G0_PD_A3ISP0>;
+			// resets = <&cpg 612>;
+			renesas,id = <0>;
+			status = "okay";
+		};
+
+		isp1: isp@fed20000 {
+			compatible = "renesas,isp-r8a779g0";
+			reg = <0 0xfed20000 0 0x10000>;
+			interrupts = <GIC_SPI 474 IRQ_TYPE_LEVEL_LOW>;
+			// clocks = <&cpg CPG_MOD 613>;
+			// power-domains = <&sysc R8A779G0_PD_A3ISP1>;
+			// resets = <&cpg 613>;
+			renesas,id = <1>;
+			status = "okay";
+		};
+
+		vin00: video@e6ef0000 {
+			compatible = "renesas,vin-r8a779g0", "generic-uio";
+			reg = <0 0xe6ef0000 0 0x1000>;
+			interrupts = <GIC_SPI 529 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&vin_ref_clk>;
+			// clocks = <&cpg CPG_MOD 730>;
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			// resets = <&cpg 730>;
+			renesas,id = <0>;
+			renesas,isp = <&isp0>;
+			linux,uio-name = "vin_00";
+			status = "okay";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+					reg = <1>;
+
+					vin0csi40: endpoint@0 {
+						reg = <0>;
+						remote-endpoint = <&csi40vin0>;
+					};
+				};
+			};
+		};
+
+		vin01: video@e6ef1000 {
+			compatible = "renesas,vin-r8a779g0", "generic-uio";
+			reg = <0 0xe6ef1000 0 0x1000>;
+			interrupts = <GIC_SPI 530 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&vin_ref_clk>;
+			// clocks = <&cpg CPG_MOD 731>;
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			// resets = <&cpg 731>;
+			renesas,id = <1>;
+			renesas,isp = <&isp0>;
+			linux,uio-name = "vin_01";
+			status = "okay";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+					reg = <1>;
+
+					vin1csi40: endpoint@0 {
+						reg = <0>;
+						remote-endpoint = <&csi40vin1>;
+					};
+				};
+			};
+		};
+
+		vin02: video@e6ef2000 {
+			compatible = "renesas,vin-r8a779g0", "generic-uio";
+			reg = <0 0xe6ef2000 0 0x1000>;
+			interrupts = <GIC_SPI 531 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&vin_ref_clk>;
+			// clocks = <&cpg CPG_MOD 800>;
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			// resets = <&cpg 800>;
+			renesas,id = <2>;
+			renesas,isp = <&isp0>;
+			linux,uio-name = "vin_02";
+			status = "okay";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+					reg = <1>;
+
+					vin2csi40: endpoint@0 {
+						reg = <0>;
+						remote-endpoint = <&csi40vin2>;
+					};
+				};
+			};
+		};
+
+		vin03: video@e6ef3000 {
+			compatible = "renesas,vin-r8a779g0", "generic-uio";
+			reg = <0 0xe6ef3000 0 0x1000>;
+			interrupts = <GIC_SPI 532 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&vin_ref_clk>;
+			// clocks = <&cpg CPG_MOD 801>;
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			// resets = <&cpg 801>;
+			renesas,id = <3>;
+			renesas,isp = <&isp0>;
+			linux,uio-name = "vin_03";
+			status = "okay";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+					reg = <1>;
+
+					vin3csi40: endpoint@0 {
+						reg = <0>;
+						remote-endpoint = <&csi40vin3>;
+					};
+				};
+			};
+		};
+
+		vin10: video@e6ef8000 {
+			compatible = "renesas,vin-r8a779g0", "generic-uio";
+			reg = <0 0xe6ef8000 0 0x1000>;
+			interrupts = <GIC_SPI 537 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&vin_ref_clk>;
+			// clocks = <&cpg CPG_MOD 806>;
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			// resets = <&cpg 806>;
+			renesas,id = <8>;
+			renesas,isp = <&isp1>;
+			linux,uio-name = "vin_10";
+			status = "okay";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+					reg = <1>;
+
+					vin8csi41: endpoint@1 {
+						reg = <1>;
+						remote-endpoint = <&csi41vin8>;
+					};
+				};
+			};
+		};
+
+		vin11: video@e6ef9000 {
+			compatible = "renesas,vin-r8a779g0", "generic-uio";
+			reg = <0 0xe6ef9000 0 0x1000>;
+			interrupts = <GIC_SPI 538 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&vin_ref_clk>;
+			// clocks = <&cpg CPG_MOD 807>;
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			// resets = <&cpg 807>;
+			renesas,id = <9>;
+			renesas,isp = <&isp1>;
+			linux,uio-name = "vin_11";
+			status = "okay";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+					reg = <1>;
+
+					vin9csi41: endpoint@1 {
+						reg = <1>;
+						remote-endpoint = <&csi41vin9>;
+					};
+				};
+			};
+		};
+
+		vin12: video@e6efa000 {
+			compatible = "renesas,vin-r8a779g0", "generic-uio";
+			reg = <0 0xe6efa000 0 0x1000>;
+			interrupts = <GIC_SPI 539 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&vin_ref_clk>;
+			// clocks = <&cpg CPG_MOD 808>;
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			// resets = <&cpg 808>;
+			renesas,id = <10>;
+			renesas,isp = <&isp1>;
+			linux,uio-name = "vin_12";
+			status = "okay";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+					reg = <1>;
+
+					vin10csi41: endpoint@1 {
+						reg = <1>;
+						remote-endpoint = <&csi41vin10>;
+					};
+				};
+			};
+		};
+
+		vin13: video@e6efb000 {
+			compatible = "renesas,vin-r8a779g0", "generic-uio";
+			reg = <0 0xe6efb000 0 0x1000>;
+			interrupts = <GIC_SPI 540 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&vin_ref_clk>;
+			// clocks = <&cpg CPG_MOD 809>;
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			// resets = <&cpg 809>;
+			renesas,id = <11>;
+			renesas,isp = <&isp1>;
+			linux,uio-name = "vin_13";
+			status = "okay";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+					reg = <1>;
+
+					vin11csi41: endpoint@1 {
+						reg = <1>;
+						remote-endpoint = <&csi41vin11>;
+					};
+				};
+			};
+		};
+
+		csi40: csi2@fe500000 {
+			compatible = "renesas,r8a779g0-csi2", "generic-uio";
+			reg = <0 0xfe500000 0 0x40000>;
+			interrupts = <GIC_SPI 499 IRQ_TYPE_LEVEL_HIGH>;
+			// clocks = <&cpg CPG_MOD 331>;
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			// resets = <&cpg 331>;
+			linux,uio-name = "csi_00";
+			status = "okay";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+					reg = <1>;
+
+					csi40vin0: endpoint@0 {
+						reg = <0>;
+						remote-endpoint = <&vin0csi40>;
+					};
+					csi40vin1: endpoint@1 {
+						reg = <1>;
+						remote-endpoint = <&vin1csi40>;
+					};
+					csi40vin2: endpoint@2 {
+						reg = <2>;
+						remote-endpoint = <&vin2csi40>;
+					};
+					csi40vin3: endpoint@3 {
+						reg = <3>;
+						remote-endpoint = <&vin3csi40>;
+					};
+				};
+			};
+		};
+
+		csi41: csi2@fe540000 {
+			compatible = "renesas,r8a779g0-csi2", "generic-uio";
+			reg = <0 0xfe540000 0 0x40000>;
+			interrupts = <GIC_SPI 500 IRQ_TYPE_LEVEL_HIGH>;
+			// clocks = <&cpg CPG_MOD 400>;
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			// resets = <&cpg 400>;
+			linux,uio-name = "csi_01";
+			status = "okay";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				port@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+
+					reg = <1>;
+
+					csi41vin8: endpoint@0 {
+						reg = <0>;
+						remote-endpoint = <&vin8csi41>;
+					};
+					csi41vin9: endpoint@1 {
+						reg = <1>;
+						remote-endpoint = <&vin9csi41>;
+					};
+					csi41vin10: endpoint@2 {
+						reg = <2>;
+						remote-endpoint = <&vin10csi41>;
+					};
+					csi41vin11: endpoint@3 {
+						reg = <3>;
+						remote-endpoint = <&vin11csi41>;
+					};
+				};
+			};
+		};
+
+		pciec0: pcie@e65d0000 {
+			compatible = "renesas,r8a779g0-pcie",
+				     "renesas,rcar-gen4-pcie";
+			reg = <0 0xe65d0000 0 0x3000>, <0 0xe65d3000 0 0x2000>,
+			      <0 0xe65d5000 0 0x1200>, <0 0xe65d6200 0 0x0e00>,
+			      <0 0xe65d7000 0 0x1000>, <0 0xfe000000 0 0x400000>;
+			reg-names = "dbi", "atu", "dma", "app", "phy", "config";
+			#address-cells = <3>;
+			#size-cells = <2>;
+			bus-range = <0x00 0xff>;
+			device_type = "pci";
+			ranges = <0x82000000 0 0x30000000 0 0x30000000 0 0x10000000>;
+			dma-ranges = <0x42000000 0 0x40000000 0 0x40000000 0 0x80000000>;
+			interrupts = <GIC_SPI 449 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 450 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 451 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 452 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 453 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 454 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 455 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "others", "dma", "correctable",
+					  "fatal", "nonfatal", "lp", "vndmsg";
+			#interrupt-cells = <1>;
+			interrupt-map-mask = <0 0 0 7>;
+			interrupt-map = <0 0 0 1 &gic GIC_SPI 449 IRQ_TYPE_LEVEL_HIGH
+				         0 0 0 2 &gic GIC_SPI 449 IRQ_TYPE_LEVEL_HIGH
+				         0 0 0 3 &gic GIC_SPI 449 IRQ_TYPE_LEVEL_HIGH
+				         0 0 0 4 &gic GIC_SPI 449 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&pciec_ref_clk>;
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			// resets = <&cpg 624>;
+			num-lanes = <2>;
+			snps,enable-cdm-check;
+			max-link-speed = <4>;
+			status = "disabled";
+		};
+	};
+};
+
+&csi40 {
+	status = "okay";
+	pin-swap;
+
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@0 {
+			reg = <0>;
+
+			csi40_in: endpoint {
+				bus-type = <1>;
+				clock-lanes = <0>;
+				data-lanes = <1 2 3>;
+				pin-swap-rx-order = <ABC BCA ABC>;
+				hs-receive-eq = <0x4 0x4 0x4>;
+				remote-endpoint = <&max96712_out0>;
+			};
+		};
+	};
+};
+
+&csi41 {
+	status = "okay";
+	pin-swap;
+
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@0 {
+			reg = <0>;
+
+			csi41_in: endpoint {
+				bus-type = <1>;
+				clock-lanes = <0>;
+				data-lanes = <1 2 3>;
+				pin-swap-rx-order = <ABC BCA ABC>;
+				hs-receive-eq = <0x4 0x4 0x4>;
+				remote-endpoint = <&max96712_out1>;
+			};
+		};
+	};
+};
+&i2c0 {
+	dma_transfer_size = <4>;
+	status = "okay";
+
+	io_expander_a: gpio@20 {
+		compatible = "onnn,pca9654";
+		reg = <0x20>;
+		// interrupt-parent = <&gpio0>;
+		// interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
+		gpio-controller;
+		#gpio-cells = <2>;
+		interrupt-controller;
+		#interrupt-cells = <2>;
+	};
+
+	io_expander2: gpio@21 {
+		compatible = "onnn,pca9654";
+		reg = <0x21>;
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
+
+	io_expander3: gpio@22 {
+		compatible = "onnn,pca9654";
+		reg = <0x22>;
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
+
+	io_expander4: gpio@27 {
+		compatible = "onnn,pca9654";
+		reg = <0x27>;
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
+};
+
+&i2c1 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	sn65dsi86_0@2c {
+		compatible = "ti,sn65dsi86";
+		reg = <0x2c>;
+		dp-connector;
+		clocks = <&ref_clk>;
+		clock-names = "refclk";
+		no-use-gpio;
+		no-use-scramble;
+		hpd-poll;
+		status = "okay";
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+				sn65dsi86_in0: endpoint {
+					remote-endpoint = <&dsi0_out>;
+				};
+			};
+
+			port@1 {
+				reg = <1>;
+				sn65dsi86_out0: endpoint {
+					remote-endpoint = <&dsi_con_out0>;
+				};
+			};
+		};
+	};
+
+	gmsl0: gmsl-deserializer@49 {
+		gpio-controller;
+		#gpio-cells = <2>;
+
+		compatible = "maxim,max96712";
+		reg = <0x49>, <0x01>, <0x02>, <0x03>, <0x04>;
+		gpios = <&io_expander2 0 GPIO_ACTIVE_HIGH>;
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+				max96712_in0: endpoint {
+				};
+			};
+
+			port@1 {
+				reg = <1>;
+				max96712_in1: endpoint {
+				};
+			};
+
+			port@2 {
+				reg = <2>;
+				max96712_in2: endpoint {
+				};
+			};
+
+			port@3 {
+				reg = <3>;
+				max96712_in3: endpoint {
+				};
+			};
+
+			port@4 {
+				reg = <4>;
+				max96712_out0: endpoint {
+					bus-type = <1>;
+					clock-lanes = <0>;
+					data-lanes = <1 2 3>;
+					remote-endpoint = <&csi40_in>;
+				};
+			};
+		};
+
+		i2c-mux {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			i2c@0 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				reg = <0>;
+
+				status = "disabled";
+			};
+
+			i2c@1 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				reg = <1>;
+
+				status = "disabled";
+			};
+
+			i2c@2 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				reg = <2>;
+
+				status = "disabled";
+			};
+
+			i2c@3 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				reg = <3>;
+
+				status = "disabled";
+			};
+		};
+	};
+
+	gmsl1: gmsl-deserializer@4b {
+		gpio-controller;
+		#gpio-cells = <2>;
+
+		compatible = "maxim,max96712";
+		reg = <0x4b>, <0x05>, <0x06>, <0x07>, <0x08>;
+		gpios = <&io_expander3 0 GPIO_ACTIVE_HIGH>;
+		maxim,invert_phy-pol;
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+				max96712_in4: endpoint {
+				};
+			};
+
+			port@1 {
+				reg = <1>;
+				max96712_in5: endpoint {
+				};
+			};
+
+			port@2 {
+				reg = <2>;
+				max96712_in6: endpoint {
+				};
+			};
+
+			port@3 {
+				reg = <3>;
+				max96712_in7: endpoint {
+				};
+			};
+
+			port@4 {
+				reg = <4>;
+				max96712_out1: endpoint {
+					bus-type = <1>;
+					clock-lanes = <0>;
+					data-lanes = <1 2 3>;
+					remote-endpoint = <&csi41_in>;
+				};
+			};
+		};
+
+		i2c-mux {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			i2c@0 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				reg = <0>;
+
+				status = "disabled";
+			};
+
+			i2c@1 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				reg = <1>;
+
+				status = "disabled";
+			};
+
+			i2c@2 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				reg = <2>;
+
+				status = "disabled";
+			};
+
+			i2c@3 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				reg = <3>;
+
+				status = "disabled";
+			};
+		};
+	};
+};
+
+&dsi0 {
+	status = "okay";
+
+	use-extal-clk;
+
+	ports {
+		port@1 {
+			endpoint {
+				remote-endpoint = <&sn65dsi86_in0>;
+				data-lanes = <1 2 3 4>;
+			};
+		};
+	};
+};
+
+&pciec0 {
+	reset-gpio = <&io_expander_a 0 GPIO_ACTIVE_LOW>;
+	status = "okay";
+};
+
+&pciec0 {
+	status = "okay";
+	ranges = <0x82000000 0 0x30000000 0 0x30000000 0 0x8000000>;
+	msi-map = <0x0 PHANDLE_ITS 0x0 0x1000>;
+	msi-parent = <PHANDLE_ITS>;
+	interrupt-map = <0 0 0 1 PHANDLE_GIC GIC_SPI 449 IRQ_TYPE_LEVEL_HIGH
+					0 0 0 2 PHANDLE_GIC GIC_SPI 449 IRQ_TYPE_LEVEL_HIGH
+					0 0 0 3 PHANDLE_GIC GIC_SPI 449 IRQ_TYPE_LEVEL_HIGH
+					0 0 0 4 PHANDLE_GIC GIC_SPI 449 IRQ_TYPE_LEVEL_HIGH>;
+};
+/* FAKRA Overlay */
+#include "whitehawk-fakra.dtsi"
+
+/ {
+
+	#address-cells = <2>;
+	#size-cells = <2>;
+
+	passthrough {
+		cisp0: cisp@fec00000 {
+			compatible = "generic-uio";
+			reg = <0 0xfec00000 0 0x100000>;
+			interrupts = <GIC_SPI 475 IRQ_TYPE_LEVEL_HIGH>;
+			//clocks = <&cpg CPG_MOD 16>;
+			//power-domains = <&sysc R8A779G0_PD_A3ISP0>;
+			//resets = <&cpg 16>;
+			linux,uio-name = "cisp_00";
+			ipmmu-id = <RCAR_IPMMU_VI0 10>;
+			//iommus = <&ipmmu_vi0 10>, <&ipmmu_vi0 14>,
+				 //<&ipmmu_..0 18>, <&ipmmu_vi0 22>,
+				 //<&ipmmu_..0 26>;
+		};
+
+		tisp0: tisp@fed00000 {
+			compatible = "generic-uio";
+			reg = <0 0xfed00000 0 0x10000>;
+			interrupts = <GIC_SPI 473 IRQ_TYPE_LEVEL_HIGH>;
+			//clocks = <&cpg CPG_MOD 612>;
+			//power-domains = <&sysc R8A779G0_PD_A3ISP0>;
+			//resets = <&cpg 612>;
+			linux,uio-name = "tisp_00";
+		};
+
+		cisp1: cisp@fee00000 {
+			compatible = "generic-uio";
+			reg = <0 0xfee00000 0 0x100000>;
+			interrupts = <GIC_SPI 476 IRQ_TYPE_LEVEL_HIGH>;
+			//clocks = <&cpg CPG_MOD 17>;
+			//power-domains = <&sysc R8A779G0_PD_A3ISP1>;
+			//resets = <&cpg 17>;
+			linux,uio-name = "cisp_01";
+			ipmmu-id = <RCAR_IPMMU_VI0 11>;
+			//iommus = <&ipmmu_vi0 11>, <&ipmmu_vi0 15>,
+				 //<&ipmmu_..0 19>, <&ipmmu_vi0 23>,
+				 //<&ipmmu_..0 27>; 
+		};
+
+		tisp1: tisp@fed20000 {
+			compatible = "generic-uio";
+			reg = <0 0xfed20000 0 0x10000>;
+			interrupts = <GIC_SPI 474 IRQ_TYPE_LEVEL_HIGH>;
+			//clocks = <&cpg CPG_MOD 613>;
+			//power-domains = <&sysc R8A779G0_PD_A3ISP1>;
+			//resets = <&cpg 613>;
+			linux,uio-name = "tisp_01";
+		};
+
+		vspx0: vspx@fedd0000 {
+			compatible = "generic-uio";
+			reg = <0 0xfedd0000 0 0x8000>;
+			interrupts = <GIC_SPI 556 IRQ_TYPE_LEVEL_HIGH>;
+			// clocks = <&cpg CPG_MOD 1028>;
+			// power-domains = <&sysc R8A779G0_PD_A3ISP0>;
+			// resets = <&cpg 1028>;
+			linux,uio-name = "vspx_00";
+			ipmmu-id = <RCAR_IPMMU_VI1 24>;
+			// iommus = <&ipmmu_vi1 24>;
+		};
+
+		vspx1: vspx@fedd8000 {
+			compatible = "generic-uio";
+			reg = <0 0xfedd8000 0 0x8000>;
+			interrupts = <GIC_SPI 557 IRQ_TYPE_LEVEL_HIGH>;
+			// clocks = <&cpg CPG_MOD 1029>;
+			// power-domains = <&sysc R8A779G0_PD_A3ISP1>;
+			// resets = <&cpg 1029>;
+			linux,uio-name = "vspx_01";
+			ipmmu-id = <RCAR_IPMMU_VI1 25>;
+			// iommus = <&ipmmu_vi1 25>;
+		};
+
+		fcpvx0: fcpvs@fedb0000 {
+			compatible = "generic-uio";
+			reg = <0 0xfedb0000 0 0x8000>;
+			// clocks =<&cpg CPG_MOD 1100>;
+			// power-domains = <&sysc R8A779G0_PD_A3ISP0>;
+			// resets = <&cpg 1100>;
+			linux,uio-name = "fcpvx_00";
+			ipmmu-id = <RCAR_IPMMU_VI1 24>;
+			// iommus = <&ipmmu_vi1 24>;
+		};
+
+		fcpvx1: fcpvs@fedb8000 {
+			compatible = "generic-uio";
+			reg = <0 0xfedb8000 0 0x8000>;
+			// clocks =<&cpg CPG_MOD 1101>;
+			// power-domains = <&sysc R8A779G0_PD_A3ISP1>;
+			// resets = <&cpg 1101>;
+			linux,uio-name = "fcpvx_01";
+			ipmmu-id = <RCAR_IPMMU_VI1 25>;
+			// iommus = <&ipmmu_vi1 25>;
+		};
+
+		ivcp1e_00 {
+			compatible = "generic-uio";
+			reg = <0 0xfea00000 0 0x10000>;
+			// clocks = <&cpg CPG_MOD 616>;
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			// resets = <&cpg 616>;
+			interrupts = <GIC_SPI 855 IRQ_TYPE_LEVEL_HIGH>;
+			linux,uio-name = "ivcp1e_00";
+			ipmmu-id = <RCAR_IPMMU_VC 14>;
+			// iommus = <&ipmmu_vc 14>;
+		};
+
+		irq_ivcp1e_00_01 {
+			compatible = "generic-uio";
+			reg = <0 0xfea00000 0 0x10000>;
+			interrupts = <GIC_SPI 856 IRQ_TYPE_LEVEL_HIGH>;
+			linux,uio-name = "irq_ivcp1e_00_01";
+			ipmmu-id = <RCAR_IPMMU_VC 14>;
+			// iommus = <&ipmmu_vc 14>;
+		};
+
+		vcp4_00: vcpl4@fe910000 {
+			compatible = "generic-uio";
+			reg = <0 0xfe910000 0 0x10000>;
+			interrupts = <GIC_SPI 858 IRQ_TYPE_LEVEL_HIGH>;
+			// clocks = <&cpg CPG_MOD 729>;
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			// resets = <&cpg 729>;
+			linux,uio-name = "vcp4_00";
+		};
+
+		irq_vcp4_00_01 {
+			compatible = "generic-uio";
+			reg = <0 0xfe910000 0 0x10000>;
+			interrupts = <GIC_SPI 859 IRQ_TYPE_LEVEL_HIGH>;
+			linux,uio-name = "irq_vcp4_00_01";
+		};
+
+		fcpc_00 {
+			compatible = "generic-uio";
+			reg = <0 0xfe90f000 0 0x1000>;
+			// clocks = <&cpg CPG_MOD 507>;
+			// power-domains = <&sysc R8A779G0_PD_ALWAYS_ON>;
+			// resets = <&cpg 507>;
+			linux,uio-name = "fcpc_00";
+		};
+	};
+};
